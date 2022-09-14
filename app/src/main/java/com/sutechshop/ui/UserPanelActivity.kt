@@ -1,11 +1,12 @@
-package com.sutechshop
+package com.sutechshop.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.sutechshop.R
 
-class MainActivity : AppCompatActivity() {
+class UserPanelActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_user_panel)
     }
 }

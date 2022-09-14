@@ -14,7 +14,7 @@
         android:theme="@style/Theme.SutechShop"
         tools:targetApi="31" >
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,10 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".UserPanelActivity" />
-        <activity android:name=".CartActivity" />
-        <activity android:name=".CheckoutActivity" />
+        <activity android:name=".ui.LoginActivity" />
+        <activity android:name=".ui.UserPanelActivity" />
+        <activity android:name=".ui.CartActivity" />
+        <activity android:name=".ui.CheckoutActivity" />
     </application>
 
 </manifest>
