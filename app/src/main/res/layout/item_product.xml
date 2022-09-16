@@ -32,13 +32,12 @@
             app:layout_constraintGuide_percent="0.3" />
 
         <TextView
-            android:id="@+id/itemProductTextView1"
+            android:id="@+id/itemProductTextViewTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:text="چیپس نمکی"
             android:textColor="#000000"
             android:textSize="17sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,32 +45,30 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/itemProductTextView2"
+            android:id="@+id/itemProductTextViewAvailable"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="8dp"
-            android:text="این کالا موجود است"
             android:textColor="#605B5B"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/itemProductGuideline1"
-            app:layout_constraintTop_toBottomOf="@+id/itemProductTextView1" />
+            app:layout_constraintTop_toBottomOf="@+id/itemProductTextViewTitle" />
 
         <TextView
-            android:id="@+id/itemProductTextView3"
+            android:id="@+id/itemProductTextViewPrice"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:text="15.000 تومان"
             android:textColor="#605B5B"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/itemProductTextView2" />
+            app:layout_constraintTop_toBottomOf="@+id/itemProductTextViewAvailable" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

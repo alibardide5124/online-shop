@@ -3,14 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/layout/activiry_checkout.xml" value="0.31979166666666664" />
-        <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/layout/activity_cart.xml" value="0.31979166666666664" />
-        <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/layout/activity_login.xml" value="0.25" />
-        <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/layout/activity_main.xml" value="0.25" />
-        <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/layout/activity_user_panel.xml" value="0.25" />
-        <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/layout/drawer_header.xml" value="0.28888888888888886" />
+        <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/layout/activity_main.xml" value="0.28888888888888886" />
         <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/layout/item_product.xml" value="0.28888888888888886" />
-        <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/menu/drawer_menu.xml" value="0.6768707482993197" />
+        <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/menu/drawer_menu.xml" value="0.15104166666666666" />
       </map>
     </option>
   </component>
