@@ -3,7 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/layout/activity_login.xml" value="0.23333333333333334" />
         <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/layout/activity_main.xml" value="0.28888888888888886" />
+        <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/layout/activity_user_panel.xml" value="0.1" />
         <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/layout/item_product.xml" value="0.28888888888888886" />
         <entry key="..\:/Users/Phoenix/AndroidStudioProjects/SutechShop2/app/src/main/res/menu/drawer_menu.xml" value="0.15104166666666666" />
       </map>

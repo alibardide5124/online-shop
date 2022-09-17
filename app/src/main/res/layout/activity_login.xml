@@ -5,8 +5,10 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/loginNumberLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
@@ -14,13 +16,13 @@
             android:text="به فروشگاه sutech خوش امدید"
             android:textColor="#000000"
             android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/loginTextView"
+            app:layout_constraintBottom_toTopOf="@+id/loginInputMobile"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/loginTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -28,41 +30,44 @@
             android:text="شماره موبایل خود را وارد کنید:"
             android:textColor="#000000"
             android:textSize="17sp"
-            app:layout_constraintBottom_toTopOf="@+id/loginTextInputEditTextMobile"
-            app:layout_constraintEnd_toEndOf="@+id/loginTextInputEditTextMobile"
-            app:layout_constraintStart_toStartOf="@+id/loginTextInputEditTextMobile" />
+            app:layout_constraintBottom_toTopOf="@+id/loginInputMobile"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/loginTextInputEditTextMobile"
+            android:id="@+id/loginInputMobile"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
             android:hint="شماره موبایل"
+            android:inputType="phone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/loginButtonSend"
+            android:id="@+id/loginBtnSend"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
             android:text="ارسال کد تایید"
-            app:layout_constraintEnd_toEndOf="@+id/loginTextInputEditTextMobile"
-            app:layout_constraintStart_toStartOf="@+id/loginTextInputEditTextMobile"
-            app:layout_constraintTop_toBottomOf="@+id/loginTextInputEditTextMobile" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/loginInputMobile" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/loginCodeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone">
 
         <TextView
-            android:id="@+id/loginTextView2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -70,12 +75,12 @@
             android:text="کد تایید ارسال شده را وارد کنید"
             android:textColor="#000000"
             android:textSize="17sp"
-            app:layout_constraintBottom_toTopOf="@+id/loginTextInputEditTextVerify"
-            app:layout_constraintEnd_toEndOf="@+id/loginTextInputEditTextVerify"
-            app:layout_constraintStart_toStartOf="@+id/loginTextInputEditTextVerify" />
+            app:layout_constraintBottom_toTopOf="@+id/loginInputVerify"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/loginTextInputEditTextVerify"
+            android:id="@+id/loginInputVerify"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -87,17 +92,20 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/loginButtonVerify"
+            android:id="@+id/loginBtnVerify"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
             android:text="ثبت کد تایید"
-            app:layout_constraintEnd_toEndOf="@+id/loginTextInputEditTextVerify"
-            app:layout_constraintStart_toStartOf="@+id/loginTextInputEditTextVerify"
-            app:layout_constraintTop_toBottomOf="@+id/loginTextInputEditTextVerify" />
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/loginInputVerify" />
 
         <Button
-            android:id="@+id/loginButtonWrongNumber"
+            android:id="@+id/loginBtnWrongNumber"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -110,12 +118,12 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/loginNameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone">
 
         <TextView
-            android:id="@+id/loginTextView3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -123,12 +131,12 @@
             android:text="نام خود را وارد کنید"
             android:textColor="#000000"
             android:textSize="17sp"
-            app:layout_constraintBottom_toTopOf="@+id/loginTextInputEditTextName"
-            app:layout_constraintEnd_toEndOf="@+id/loginTextInputEditTextName"
-            app:layout_constraintStart_toStartOf="@+id/loginTextInputEditTextName" />
+            app:layout_constraintBottom_toTopOf="@+id/loginInputName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/loginTextInputEditTextName"
+            android:id="@+id/loginInputName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -139,16 +147,83 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/loginButtonName"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="@+id/loginInputName"
+            app:layout_constraintStart_toStartOf="@+id/loginInputName"
+            app:layout_constraintTop_toBottomOf="@+id/loginInputName">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:text="جنسیت"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/loginRdoMan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:checked="true"
+                    android:text="مرد"
+                    android:textSize="14sp" />
+
+                <RadioButton
+                    android:id="@+id/loginRdoWoman"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="زن"
+                    android:textSize="14sp" />
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/loginBtnFinish"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
             android:text="ورود به برنامه"
-            app:layout_constraintEnd_toEndOf="@+id/loginTextInputEditTextName"
-            app:layout_constraintStart_toStartOf="@+id/loginTextInputEditTextName"
-            app:layout_constraintTop_toBottomOf="@+id/loginTextInputEditTextName" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/loginInputName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/loginLoading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center" >
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="در حال بارگزاری..."
+            android:textColor="#000000"
+            android:textSize="17sp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -29,7 +29,7 @@
                         android:id="@+id/mainBtnMenu"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_margin="16dp"
+                        android:padding="16dp"
                         android:src="@drawable/ic_menu"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         app:tint="#FAFAFA" />
@@ -47,7 +47,7 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_margin="16dp"
+                        android:padding="16dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:src="@drawable/ic_search"
                         app:tint="#FAFAFA" />

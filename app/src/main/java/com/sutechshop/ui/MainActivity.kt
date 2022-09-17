@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun isUserLoggedIn(): Boolean {
+    private fun isUserLoggedIn(): Boolean {
         preferences = getSharedPreferences("sutech", MODE_PRIVATE)
         val userData = preferences.getString("user", "")
         return userData != ""
@@ -95,18 +95,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun logout() {
         if (isUserLoggedIn()) {
+            preferences.edit().putString("user", "").apply()
+            Toast.makeText(applicationContext, "با موفقیت از حساب خارج شدید", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        } else {
             AlertDialog.Builder(this)
                 .setTitle("خروج از حساب کاربری")
                 .setMessage("شما هنوز وارد حساب نشده اید!")
                 .setPositiveButton("باشه", null)
                 .create()
                 .show()
-        } else {
-            preferences.edit().putString("user", "").apply()
-            Toast.makeText(applicationContext, "با موفقیت از حساب خارج شدید", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
         }
     }
 
