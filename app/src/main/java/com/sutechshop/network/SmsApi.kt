@@ -12,6 +12,6 @@ interface SmsApi {
     fun sendVerificationCode(@Body sendCode: SendCode): Call<Int>
 
     @POST("CheckSendCode/")
-    fun verifyCode(@Body verifyCode: VerifyCode): Call<Int>
+    fun verifyCode(@Body verifyCode: VerifyCode): Call<Boolean>
 
 }

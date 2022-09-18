@@ -5,15 +5,18 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import com.sutechshop.R
 import com.sutechshop.adapter.ProductListAdapter
 import com.sutechshop.databinding.ActivityMainBinding
 import com.sutechshop.model.Product
+import com.sutechshop.model.User
 import com.sutechshop.network.Repository
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,15 +43,26 @@ class MainActivity : AppCompatActivity() {
         binding.mainBtnRetry.setOnClickListener {
             setupRecyclerView()
         }
+        setHeaderText()
         binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navPanel -> {
-                    val intent = Intent(this, UserPanelActivity::class.java)
-                    startActivity(intent)
+                    if (isUserLoggedIn()) {
+                        val intent = Intent(this, UserPanelActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        val intent = Intent(this, LoginActivity::class.java)
+                        startActivity(intent)
+                    }
                 }
                 R.id.navCart -> {
-                    val intent = Intent(this, CartActivity::class.java)
-                    startActivity(intent)
+                    if (isUserLoggedIn()) {
+                        val intent = Intent(this, CartActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        val intent = Intent(this, LoginActivity::class.java)
+                        startActivity(intent)
+                    }
                 }
                 R.id.navLogout -> logout()
             }
@@ -56,6 +70,17 @@ class MainActivity : AppCompatActivity() {
             return@setNavigationItemSelectedListener true
         }
         setupRecyclerView()
+    }
+
+    private fun setHeaderText() {
+        if (isUserLoggedIn()) {
+            val userData = preferences.getString("user", "")
+            val user = Gson().fromJson(userData, User::class.java)
+
+            val headerView = binding.navView.getHeaderView(0)
+            val textView: TextView = headerView.findViewById(R.id.drawerName)
+            textView.text = user.name
+        }
     }
 
     private fun setupRecyclerView() {
@@ -66,7 +91,7 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call<List<Product>>, response: Response<List<Product>>) {
                 Log.d("response", response.toString())
                 if (response.isSuccessful && response.body() != null) {
-                    val adapter = ProductListAdapter(response.body()!!)
+                    val adapter = ProductListAdapter(this@MainActivity, response.body()!!)
                     binding.mainRV.layoutManager = LinearLayoutManager(this@MainActivity)
                     binding.mainRV.adapter = adapter
 
@@ -96,7 +121,8 @@ class MainActivity : AppCompatActivity() {
     private fun logout() {
         if (isUserLoggedIn()) {
             preferences.edit().putString("user", "").apply()
-            Toast.makeText(applicationContext, "با موفقیت از حساب خارج شدید", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "با موفقیت از حساب خارج شدید", Toast.LENGTH_SHORT)
+                .show()
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()

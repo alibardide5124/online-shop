@@ -1,6 +1,5 @@
 package com.sutechshop.ui
 
-import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -22,7 +21,6 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private val repository = Repository()
-    private var verificationCode = 0
     private var number = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +32,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupViews() {
-        goToNumber()
+        showNumberInput()
         binding.loginBtnSend.setOnClickListener {
             val number = binding.loginInputMobile.text.toString()
             if (isNumberValid(number))
@@ -43,14 +41,11 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "شماره موبایل اشتباه است", Toast.LENGTH_SHORT).show()
         }
         binding.loginBtnWrongNumber.setOnClickListener {
-            goToNumber()
+            showNumberInput()
         }
         binding.loginBtnVerify.setOnClickListener {
             val inputCode = binding.loginInputVerify.text.toString()
-            if (verificationCode == inputCode.toInt())
-                validateVerificationCode(number.toString(), verificationCode)
-            else
-                Toast.makeText(this, "کد وارد شده اشتباه است!", Toast.LENGTH_SHORT).show()
+            validateVerificationCode(number, inputCode.toInt())
         }
         binding.loginBtnFinish.setOnClickListener {
             val name = binding.loginInputName.text.toString()
@@ -64,103 +59,111 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun sendVerifyCode(number: String) {
-//        showLoading()
-//
-//        val sendVerifyCodeCall = repository.sendVerificationCode(number)
-//        sendVerifyCodeCall.enqueue(object : Callback<Int> {
-//            override fun onResponse(call: Call<Int>, response: Response<Int>) {
-//                if (response.isSuccessful && response.body() != null) {
-//                    try {
-//                        verificationCode = response.body()!!
-//                        goToVerify()
-//                    } catch (e: Exception) {
-//                        e.printStackTrace()
-//                        Toast.makeText(this@LoginActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
-//                    }
-//                } else {
-//                    Toast.makeText(this@LoginActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<Int>, t: Throwable) {
-//                t.printStackTrace()
-//                Toast.makeText(this@LoginActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
-//            }
-//        })
-        // TODO: DELETE THIS
-        verificationCode = 1234
-        goToVerify()
+        showLoading()
+
+        val sendVerifyCodeCall = repository.sendVerificationCode(number)
+        sendVerifyCodeCall.enqueue(object : Callback<Int> {
+            override fun onResponse(call: Call<Int>, response: Response<Int>) {
+                if (response.isSuccessful && response.body() != null) {
+                    if (response.body()!! >= 2000)
+                        showVerifyCodeInput()
+                    else {
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "عملیات موفقیت آمیز نبود",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        showNumberInput()
+                    }
+                } else {
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "خطا در برقراری ارتباط",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    showNumberInput()
+                }
+            }
+
+            override fun onFailure(call: Call<Int>, t: Throwable) {
+                t.printStackTrace()
+                Toast.makeText(this@LoginActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT)
+                    .show()
+                showNumberInput()
+            }
+        })
     }
 
     private fun validateVerificationCode(number: String, code: Int) {
-//        showLoading()
-//
-//        val verifyCodeCall = repository.verifyCode(number, code.toString())
-//        verifyCodeCall.enqueue(object : Callback<Int> {
-//            override fun onResponse(call: Call<Int>, response: Response<Int>) {
-//                if (response.isSuccessful && response.body() != null) {
-//                    try {
-//                        CoroutineScope(Dispatchers.IO).launch {
-//                            val users = getUsers(number)
-//                            if (users == null)
-//                                goToName()
-//                            else
-//                                saveUserDataAndExit(users[0])
-//                            Toast.makeText(
-//                                applicationContext,
-//                                "با موفقیت وارد شدید",
-//                                Toast.LENGTH_SHORT
-//                            ).show()
-//                        }
-//                    } catch (e: Exception) {
-//                        e.printStackTrace()
-//                        Toast.makeText(
-//                            this@LoginActivity,
-//                            "خطا در برقراری ارتباط",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                    }
-//                } else {
-//                    Toast.makeText(this@LoginActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT)
-//                        .show()
-//                }
-//            }
-//            override fun onFailure(call: Call<Int>, t: Throwable) {
-//                t.printStackTrace()
-//                Toast.makeText(this@LoginActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT)
-//                    .show()
-//            }
-//        })
-        // TODO: DELETE THIS
-        this.number = number
-        goToName()
+        showLoading()
+
+        val verifyCodeCall = repository.verifyCode(number, code.toString())
+        verifyCodeCall.enqueue(object: Callback<Boolean> {
+            override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
+                if (response.isSuccessful && response.body() != null) {
+                    if (response.body()!! == true) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val users = getUsers(number)
+                            if (users == null)
+                                showNameInput()
+                            else {
+                                saveUserDataAndExit(users[0])
+                            }
+                        }
+                    } else {
+                        Toast.makeText(this@LoginActivity, "کد تایید وارد شده اشتباه است", Toast.LENGTH_SHORT)
+                            .show()
+                        showVerifyCodeInput()
+                    }
+                } else {
+                    Toast.makeText(this@LoginActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT)
+                        .show()
+                    showVerifyCodeInput()
+                }
+            }
+
+            override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                t.printStackTrace()
+                Toast.makeText(this@LoginActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT)
+                    .show()
+                showVerifyCodeInput()
+            }
+        })
     }
 
     private fun addUser(name: String, number: String, gender: Int) {
-//        showLoading()
-//
-//        val addUserCall = repository.addUser(name, number, gender)
-//        addUserCall.enqueue(object: Callback<String> {
-//            override fun onResponse(call: Call<String>, response: Response<String>) {
-//                if (response.isSuccessful && response.body() != null) {
-//                    val string = response.body()!!
-//                    if (string.contains("done")) {
-//                        val user = User(name, number, gender)
-//                        saveUserDataAndExit(user)
-//                    } else {
-//                        Toast.makeText(this@LoginActivity, "عملیات موفقیت امیز نبود", Toast.LENGTH_SHORT).show()
-//                    }
-//                } else {
-//                    Toast.makeText(this@LoginActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
-//                }
-//            }
-//            override fun onFailure(call: Call<String>, t: Throwable) {
-//                t.printStackTrace()
-//                Toast.makeText(this@LoginActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
-//            }
-//        })
-        val user = User(name, number, gender)
-        saveUserDataAndExit(user)
+        showLoading()
+
+        val addUserCall = repository.addUser(name, number, gender)
+        addUserCall.enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val string = response.body()!!
+                    if (string.contains("done")) {
+                        val user = User(name, number, gender)
+                        saveUserDataAndExit(user)
+                    } else {
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "عملیات موفقیت امیز نبود",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        showNameInput()
+                    }
+                } else {
+                    Toast.makeText(this@LoginActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT)
+                        .show()
+                    showNameInput()
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                t.printStackTrace()
+                Toast.makeText(this@LoginActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT)
+                    .show()
+                showNameInput()
+            }
+        })
     }
 
     private fun getUsers(number: String): List<User>? {
@@ -169,7 +172,8 @@ class LoginActivity : AppCompatActivity() {
         val response = getUsersCall.execute()
         if (response.isSuccessful && response.body() != null) {
             try {
-                users?.addAll(response.body()!!)
+                if (response.body()!!.isNotEmpty())
+                    users?.addAll(response.body()!!)
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(this@LoginActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT)
@@ -186,11 +190,17 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun saveUserDataAndExit(user: User) {
+        Toast.makeText(
+            applicationContext,
+            "با موفقیت وارد شدید",
+            Toast.LENGTH_SHORT
+        ).show()
+
         getSharedPreferences("sutech", MODE_PRIVATE)
             .edit()
             .putString("user", Gson().toJson(user))
             .apply()
-        val intent = Intent(this, LoginActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         startActivity(intent)
@@ -203,21 +213,21 @@ class LoginActivity : AppCompatActivity() {
         binding.loginLoading.visibility = View.VISIBLE
     }
 
-    private fun goToNumber() {
+    private fun showNumberInput() {
         binding.loginNumberLayout.visibility = View.VISIBLE
         binding.loginCodeLayout.visibility = View.GONE
         binding.loginNameLayout.visibility = View.GONE
         binding.loginLoading.visibility = View.GONE
     }
 
-    private fun goToVerify() {
+    private fun showVerifyCodeInput() {
         binding.loginNumberLayout.visibility = View.GONE
         binding.loginCodeLayout.visibility = View.VISIBLE
         binding.loginNameLayout.visibility = View.GONE
         binding.loginLoading.visibility = View.GONE
     }
 
-    private fun goToName() {
+    private fun showNameInput() {
         binding.loginNumberLayout.visibility = View.GONE
         binding.loginCodeLayout.visibility = View.GONE
         binding.loginNameLayout.visibility = View.VISIBLE

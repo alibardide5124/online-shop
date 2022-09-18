@@ -1,6 +1,6 @@
 package com.sutechshop.network
 
-import com.sutechshop.model.Product
+import com.sutechshop.model.Cart
 import com.sutechshop.model.query.Delete
 import com.sutechshop.model.query.Insert
 import com.sutechshop.model.query.Select
@@ -16,30 +16,106 @@ class Repository {
     private val accessKey = "F6tIj8U0Lsb42hw0xPhIYVWSR58cXDXh"
 
     fun getAllProducts() =
-        databaseApi.getAllProducts(Select(accessKey, "products"))
+        databaseApi.getAllProducts(
+            Select(accessKey, "products")
+        )
 
     fun searchProducts(query: String) =
-        databaseApi.getAllProducts(Select(accessKey, "products", "name=$query"))
+        databaseApi.getAllProducts(
+            Select(accessKey, "products", "name=$query")
+        )
 
     fun sendVerificationCode(number: String) =
-        smsApi.sendVerificationCode(SendCode(number))
+        smsApi.sendVerificationCode(
+            SendCode(number)
+        )
 
-    fun verifyCode(number: String, code: String) =
-        smsApi.verifyCode(VerifyCode(number, code))
+    fun verifyCode(number: String, code: String): Call<Boolean> {
+        return smsApi.verifyCode(
+            VerifyCode(number, code)
+        )
+    }
 
     fun getUsers(number: String) =
-        databaseApi.getUsers(Select(accessKey, "users", "number=$number"))
+        databaseApi.getUsers(
+            Select(accessKey, "users", "number=$number")
+        )
 
     fun addUser(name: String, number: String, gender: Int): Call<String> {
         val values = "(name, number, gender) values ('$name', '$number', $gender)"
-        return databaseApi.addUser(Insert(accessKey, "users", values))
+        return databaseApi.addUser(
+            Insert(accessKey, "users", values)
+        )
     }
 
     fun setUser(name: String, number: String, gender: Int): Call<String> {
         val set = "name='$name', gender=$gender"
-        return databaseApi.setUser(Update(accessKey, "users", set, "number='$number'"))
+        return databaseApi.setUser(
+            Update(accessKey, "users", set, "number='$number'")
+        )
     }
 
     fun deleteUser(number: String) =
-        databaseApi.deleteUser(Delete(accessKey, "users", "number='$number'"))
+        databaseApi.deleteUser(
+            Delete(accessKey, "users", "number='$number'")
+        )
+
+    fun addToCart(number: String, productId: Int): Call<String> {
+        val values = "(userId, productId, quantity) values ('$number', $productId, 1)"
+        return databaseApi.addToCart(
+            Insert(accessKey, "cart", values)
+        )
+    }
+
+    fun removeFromCart(number: String, productId: Int): Call<String> {
+        return databaseApi.removeFromCart(
+            Delete(
+                accessKey,
+                "cart",
+                "userId='$number' and productId=$productId"
+            )
+        )
+    }
+
+    fun updateCart(number: String, productId: Int, quantity: Int): Call<String> {
+        return databaseApi.updateCart(
+            Update(
+                accessKey,
+                "cart",
+                "quantity=$quantity",
+                "userId='$number' and productId=$productId"
+            )
+        )
+    }
+
+    fun getCartItem(number: String, productId: Int): Call<List<Cart>> {
+        return databaseApi.getCartItem(
+            Select(
+                accessKey,
+                "cart",
+                "number='$number' and productId=$productId"
+            )
+        )
+    }
+
+    fun getUserCart(number: String): Call<List<Cart>> {
+        return databaseApi.getUserCart(
+            Select(
+                accessKey,
+                "cart",
+                "userId='$number'"
+            )
+        )
+    }
+
+    fun checkout(number: String): Call<String> {
+        return databaseApi.checkout(
+            Delete(
+                accessKey,
+                "cart",
+                "userId='$number'"
+            )
+        )
+    }
+
 }
