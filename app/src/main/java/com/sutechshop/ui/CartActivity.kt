@@ -7,6 +7,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.sutechshop.adapter.CartListAdapter
 import com.sutechshop.databinding.ActivityCartBinding
 import com.sutechshop.model.Cart
@@ -22,18 +23,15 @@ class CartActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCartBinding
     private lateinit var preferences: SharedPreferences
     private val repository = Repository()
+    private lateinit var products: List<Product>
+    private lateinit var cartList: List<Cart>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        preferences = getSharedPreferences("sutech", MODE_PRIVATE)
-        if (!isUserLoggedIn()) {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
         binding = ActivityCartBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        preferences = getSharedPreferences("sutech", MODE_PRIVATE)
 
         setupViews()
     }
@@ -42,9 +40,10 @@ class CartActivity : AppCompatActivity() {
         binding.cartBack.setOnClickListener { finish() }
 
         setupCartList()
-
         binding.cartBtnPay.setOnClickListener {
             val intent = Intent(this@CartActivity, CheckoutActivity::class.java)
+            intent.putExtra("products", Gson().toJson(products))
+            intent.putExtra("cartList", Gson().toJson(cartList))
             startActivity(intent)
         }
         binding.cartBtnRetry.setOnClickListener {
@@ -55,14 +54,15 @@ class CartActivity : AppCompatActivity() {
     private fun setupCartList() {
         showLoading()
         val getAllProductsCall = repository.getAllProducts()
-        getAllProductsCall.enqueue(object: Callback<List<Product>> {
+        getAllProductsCall.enqueue(object : Callback<List<Product>> {
             override fun onResponse(call: Call<List<Product>>, response: Response<List<Product>>) {
                 if (response.isSuccessful && response.body() != null) {
+                    products = response.body()!!
                     setupRecyclerView(response.body()!!)
-                } else {
+                }else
                     showError()
-                }
             }
+
             override fun onFailure(call: Call<List<Product>>, t: Throwable) {
                 t.printStackTrace()
                 showError()
@@ -75,12 +75,12 @@ class CartActivity : AppCompatActivity() {
         val user = Gson().fromJson(userData, User::class.java)
 
         val getUserCartCall = repository.getUserCart(user.number)
-        getUserCartCall.enqueue(object: Callback<List<Cart>> {
+        getUserCartCall.enqueue(object : Callback<List<Cart>> {
             override fun onResponse(call: Call<List<Cart>>, response: Response<List<Cart>>) {
                 if (response.isSuccessful && response.body() != null) {
-                    val cartList = response.body()!!
-                    val adapter = CartListAdapter(this@CartActivity, products, cartList)
+                    cartList = response.body()!!
 
+                    val adapter = CartListAdapter(this@CartActivity, products, cartList)
                     binding.cartRv.layoutManager = LinearLayoutManager(this@CartActivity)
                     binding.cartRv.adapter = adapter
 
@@ -89,16 +89,12 @@ class CartActivity : AppCompatActivity() {
                     showError()
                 }
             }
+
             override fun onFailure(call: Call<List<Cart>>, t: Throwable) {
                 t.printStackTrace()
                 showError()
             }
         })
-    }
-
-    private fun isUserLoggedIn(): Boolean {
-        val userData = preferences.getString("user", "")
-        return userData != ""
     }
 
     private fun showLoading() {

@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.size.Scale
 import coil.transform.RoundedCornersTransformation
 import com.google.gson.Gson
 import com.sutechshop.ui.DetailActivity
@@ -37,7 +38,6 @@ class ProductListAdapter(
 
     override fun onBindViewHolder(holder: ProductListViewHolder, position: Int) {
         val item = productList[position]
-//        TODO: holder.image
         holder.title.text = item.name
         holder.available.text = "این کالا موجود است"
         holder.price.text = "${item.price} تومان"
@@ -52,6 +52,7 @@ class ProductListAdapter(
             placeholder(R.drawable.placeholder)
             error(R.drawable.placeholder)
             transformations(RoundedCornersTransformation(8f))
+            scale(Scale.FILL)
         }
 
         holder.itemView.setOnClickListener {

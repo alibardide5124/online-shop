@@ -17,6 +17,9 @@ interface DatabaseApi {
     fun getAllProducts(@Body select: Select): Call<List<Product>>
 
     @POST("api/")
+    fun updateProduct(@Body update: Update): Call<String>
+
+    @POST("api/")
     fun getUsers(@Body select: Select): Call<List<User>>
 
     @POST("api/")

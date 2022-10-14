@@ -12,6 +12,7 @@ import com.sutechshop.network.Repository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -65,9 +66,10 @@ class LoginActivity : AppCompatActivity() {
         sendVerifyCodeCall.enqueue(object : Callback<Int> {
             override fun onResponse(call: Call<Int>, response: Response<Int>) {
                 if (response.isSuccessful && response.body() != null) {
-                    if (response.body()!! >= 2000)
+                    if (response.body()!! >= 2000) {
+                        this@LoginActivity.number = number
                         showVerifyCodeInput()
-                    else {
+                    } else {
                         Toast.makeText(
                             this@LoginActivity,
                             "عملیات موفقیت آمیز نبود",
@@ -98,20 +100,26 @@ class LoginActivity : AppCompatActivity() {
         showLoading()
 
         val verifyCodeCall = repository.verifyCode(number, code.toString())
-        verifyCodeCall.enqueue(object: Callback<Boolean> {
+        verifyCodeCall.enqueue(object : Callback<Boolean> {
             override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
                 if (response.isSuccessful && response.body() != null) {
                     if (response.body()!! == true) {
                         CoroutineScope(Dispatchers.IO).launch {
                             val users = getUsers(number)
-                            if (users == null)
-                                showNameInput()
-                            else {
-                                saveUserDataAndExit(users[0])
+                            withContext(Dispatchers.Main) {
+                                if (users == null || users.isEmpty()) {
+                                    showNameInput()
+                                } else {
+                                    saveUserDataAndExit(users[0])
+                                }
                             }
                         }
                     } else {
-                        Toast.makeText(this@LoginActivity, "کد تایید وارد شده اشتباه است", Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "کد تایید وارد شده اشتباه است",
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                         showVerifyCodeInput()
                     }
@@ -167,13 +175,12 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun getUsers(number: String): List<User>? {
-        val users: MutableList<User>? = null
+        var users: List<User>? = null
         val getUsersCall = repository.getUsers(number)
         val response = getUsersCall.execute()
         if (response.isSuccessful && response.body() != null) {
             try {
-                if (response.body()!!.isNotEmpty())
-                    users?.addAll(response.body()!!)
+                users = response.body()!!
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(this@LoginActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT)

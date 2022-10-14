@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.size.Scale
 import coil.transform.RoundedCornersTransformation
 import com.sutechshop.R
 import com.sutechshop.model.Cart
@@ -29,7 +30,7 @@ class CartListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartListViewHolder {
         val view = LayoutInflater.from(context)
-            .inflate(R.layout.item_product, parent, false)
+            .inflate(R.layout.item_cart, parent, false)
         return CartListViewHolder(view)
     }
 
@@ -40,16 +41,17 @@ class CartListAdapter(
         holder.title.text = product.name
         holder.available.text = "این کالا موجود است"
         holder.quantity.text = "${cartItem.quantity} عدد"
-        holder.price.text = "${product.price} تومان"
+        holder.price.text = "${product.price * cartItem.quantity} تومان"
 
         holder.image.load(product.urlToImage) {
             crossfade(true)
             placeholder(R.drawable.placeholder)
             error(R.drawable.placeholder)
             transformations(RoundedCornersTransformation(8f))
+            scale(Scale.FILL)
         }
     }
 
-    override fun getItemCount(): Int = productList.size
+    override fun getItemCount(): Int = cartList.size
 
 }

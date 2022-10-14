@@ -13,7 +13,7 @@ class Repository {
 
     private val databaseApi = RetrofitService().buildDatabaseService()
     private val smsApi = RetrofitService().buildSmsService()
-    private val accessKey = "F6tIj8U0Lsb42hw0xPhIYVWSR58cXDXh"
+    private val accessKey = ***REMOVED***
 
     fun getAllProducts() =
         databaseApi.getAllProducts(
@@ -22,8 +22,19 @@ class Repository {
 
     fun searchProducts(query: String) =
         databaseApi.getAllProducts(
-            Select(accessKey, "products", "name=$query")
+            Select(accessKey, "products", "name LIKE '%$query%'")
         )
+
+    fun updateProduct(productId: Int, quantity: Int): Call<String> {
+        return databaseApi.updateProduct(
+            Update(
+                accessKey,
+                "products",
+                "quantity=$quantity",
+                "id=$productId"
+            )
+        )
+    }
 
     fun sendVerificationCode(number: String) =
         smsApi.sendVerificationCode(
@@ -38,7 +49,7 @@ class Repository {
 
     fun getUsers(number: String) =
         databaseApi.getUsers(
-            Select(accessKey, "users", "number=$number")
+            Select(accessKey, "users", "number='$number'")
         )
 
     fun addUser(name: String, number: String, gender: Int): Call<String> {
@@ -93,7 +104,7 @@ class Repository {
             Select(
                 accessKey,
                 "cart",
-                "number='$number' and productId=$productId"
+                "userId='$number' and productId=$productId"
             )
         )
     }

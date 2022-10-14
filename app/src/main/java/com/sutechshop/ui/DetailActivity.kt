@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import coil.load
+import coil.size.Scale
 import coil.transform.RoundedCornersTransformation
 import com.google.gson.Gson
 import com.sutechshop.R
@@ -46,9 +47,10 @@ class DetailActivity : AppCompatActivity() {
             placeholder(R.drawable.placeholder)
             error(R.drawable.placeholder)
             transformations(RoundedCornersTransformation(8f))
+            scale(Scale.FILL)
         }
         binding.detailTvTitle.text = product.name
-        binding.detailTvAvailable.text = "موجودی کالا در انبار: ${product.price} عدد"
+        binding.detailTvAvailable.text = "موجودی کالا در انبار: ${product.quantity} عدد"
         binding.detailTvPrice.text = "${product.price} تومان"
         binding.detailTvDescription.text = product.description
 
@@ -59,145 +61,214 @@ class DetailActivity : AppCompatActivity() {
             binding.detailOrderLayout.visibility = View.GONE
         }
 
+        setupQuantityText()
         setupAddButton()
         setupRemoveButton()
-        setupQuantityText()
+    }
+    private fun setupQuantityText() {
+        if (isUserLoggedIn()) {
+            showLoading()
+
+            val getCartItemCall = repository.getCartItem(getUser()!!.number, product.id)
+            getCartItemCall.enqueue(object : Callback<List<Cart>> {
+                override fun onResponse(call: Call<List<Cart>>, response: Response<List<Cart>>) {
+                    if (response.isSuccessful && response.body() != null) {
+                        val items = response.body()!!
+                        if (items.isNotEmpty()) {
+                            binding.detailQuantity.text = items[0].quantity.toString()
+                        }
+                    } else {
+                        Toast.makeText(
+                            this@DetailActivity,
+                            "خطا در برقراری ارتباط",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+                    showProduct()
+                }
+
+                override fun onFailure(call: Call<List<Cart>>, t: Throwable) {
+                    t.printStackTrace()
+                    Toast.makeText(this@DetailActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT)
+                        .show()
+                    showProduct()
+                }
+
+            })
+        }
     }
 
     private fun setupAddButton() {
-        if (!isUserLoggedIn()) {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-        } else {
-            binding.detailAdd.setOnClickListener {
+        binding.detailAdd.setOnClickListener {
+            if (!isUserLoggedIn()) {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            } else {
                 val quantity = binding.detailQuantity.text.toString().toInt()
                 if (quantity == 0) {
                     showLoading()
-                    val addToCartCall = repository.addToCart(getUser().number, product.id)
-                    addToCartCall.enqueue(object: Callback<String> {
+                    val addToCartCall = repository.addToCart(getUser()!!.number, product.id)
+                    addToCartCall.enqueue(object : Callback<String> {
                         override fun onResponse(call: Call<String>, response: Response<String>) {
                             if (response.isSuccessful && response.body() != null) {
                                 if (response.body()!!.contains("done")) {
-                                    binding.detailRemove.visibility = View.VISIBLE
-                                    binding.detailQuantity.text = (quantity-1).toString()
+                                    binding.detailQuantity.text = (quantity + 1).toString()
                                 } else {
-                                    Toast.makeText(this@DetailActivity, "عملیات با خطا مواجه شد", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        this@DetailActivity,
+                                        "عملیات با خطا مواجه شد",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             } else {
-                                Toast.makeText(this@DetailActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@DetailActivity,
+                                    "خطا در برقراری ارتباط",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                             showProduct()
                         }
+
                         override fun onFailure(call: Call<String>, t: Throwable) {
-                            Toast.makeText(this@DetailActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@DetailActivity,
+                                "خطا در برقراری ارتباط",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             showProduct()
                         }
                     })
                 } else {
-                    showLoading()
-                    val updateCartCall = repository.updateCart(getUser().number, product.id, quantity+1)
-                    updateCartCall.enqueue(object: Callback<String> {
-                        override fun onResponse(call: Call<String>, response: Response<String>) {
-                            if (response.isSuccessful && response.body() != null) {
-                                if (response.body()!!.contains("done")) {
-                                    binding.detailQuantity.text = (quantity+1).toString()
-                                    if (quantity+1 == product.quantity) {
-                                        binding.detailAdd.visibility = View.VISIBLE
+                    if (quantity != product.quantity) {
+                        showLoading()
+                        val updateCartCall =
+                            repository.updateCart(getUser()!!.number, product.id, quantity + 1)
+                        updateCartCall.enqueue(object : Callback<String> {
+                            override fun onResponse(
+                                call: Call<String>,
+                                response: Response<String>
+                            ) {
+                                if (response.isSuccessful && response.body() != null) {
+                                    if (response.body()!!.contains("done")) {
+                                        binding.detailQuantity.text = (quantity + 1).toString()
+                                    } else {
+                                        Toast.makeText(
+                                            this@DetailActivity,
+                                            "عملیات با خطا مواجه شد",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 } else {
-                                    Toast.makeText(this@DetailActivity, "عملیات با خطا مواجه شد", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        this@DetailActivity,
+                                        "خطا در برقراری ارتباط",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
-                            } else {
-                                Toast.makeText(this@DetailActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
+                                showProduct()
                             }
-                            showProduct()
-                        }
-                        override fun onFailure(call: Call<String>, t: Throwable) {
-                            Toast.makeText(this@DetailActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
-                            showProduct()
-                        }
-                    })
+
+                            override fun onFailure(call: Call<String>, t: Throwable) {
+                                Toast.makeText(
+                                    this@DetailActivity,
+                                    "خطا در برقراری ارتباط",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                showProduct()
+                            }
+                        })
+                    }
                 }
             }
         }
     }
 
     private fun setupRemoveButton() {
-        if (!isUserLoggedIn()) {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-        } else {
-            binding.detailRemove.setOnClickListener {
+        binding.detailRemove.setOnClickListener {
+            if (!isUserLoggedIn()) {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            } else {
                 val quantity = binding.detailQuantity.text.toString().toInt()
                 if (quantity == 1) {
                     showLoading()
-                    val removeFromCartCall = repository.removeFromCart(getUser().number, product.id)
-                    removeFromCartCall.enqueue(object: Callback<String> {
+                    val removeFromCartCall = repository.removeFromCart(getUser()!!.number, product.id)
+                    removeFromCartCall.enqueue(object : Callback<String> {
                         override fun onResponse(call: Call<String>, response: Response<String>) {
                             if (response.isSuccessful && response.body() != null) {
                                 if (response.body()!!.contains("done")) {
-                                    binding.detailRemove.visibility = View.GONE
-                                    binding.detailQuantity.text = (quantity-1).toString()
+                                    binding.detailQuantity.text = (quantity - 1).toString()
                                 } else {
-                                    Toast.makeText(this@DetailActivity, "عملیات با خطا مواجه شد", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        this@DetailActivity,
+                                        "عملیات با خطا مواجه شد",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             } else {
-                                Toast.makeText(this@DetailActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@DetailActivity,
+                                    "خطا در برقراری ارتباط",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                             showProduct()
                         }
+
                         override fun onFailure(call: Call<String>, t: Throwable) {
-                            Toast.makeText(this@DetailActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@DetailActivity,
+                                "خطا در برقراری ارتباط",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             showProduct()
                         }
                     })
                 } else {
-                    showLoading()
-                    val updateCartCall = repository.updateCart(getUser().number, product.id, quantity-1)
-                    updateCartCall.enqueue(object: Callback<String> {
-                        override fun onResponse(call: Call<String>, response: Response<String>) {
-                            if (response.isSuccessful && response.body() != null) {
-                                if (response.body()!!.contains("done")) {
-                                    binding.detailQuantity.text = (quantity-1).toString()
+                    if (quantity != 0) {
+                        showLoading()
+                        val updateCartCall =
+                            repository.updateCart(getUser()!!.number, product.id, quantity - 1)
+                        updateCartCall.enqueue(object : Callback<String> {
+                            override fun onResponse(
+                                call: Call<String>,
+                                response: Response<String>
+                            ) {
+                                if (response.isSuccessful && response.body() != null) {
+                                    if (response.body()!!.contains("done")) {
+                                        binding.detailQuantity.text = (quantity - 1).toString()
+                                    } else {
+                                        Toast.makeText(
+                                            this@DetailActivity,
+                                            "عملیات با خطا مواجه شد",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
                                 } else {
-                                    Toast.makeText(this@DetailActivity, "عملیات با خطا مواجه شد", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        this@DetailActivity,
+                                        "خطا در برقراری ارتباط",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
-                            } else {
-                                Toast.makeText(this@DetailActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
+                                showProduct()
                             }
-                            showProduct()
-                        }
-                        override fun onFailure(call: Call<String>, t: Throwable) {
-                            Toast.makeText(this@DetailActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
-                            showProduct()
-                        }
-                    })
+
+                            override fun onFailure(call: Call<String>, t: Throwable) {
+                                Toast.makeText(
+                                    this@DetailActivity,
+                                    "خطا در برقراری ارتباط",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                showProduct()
+                            }
+                        })
+                    }
                 }
             }
         }
-    }
-
-    private fun setupQuantityText() {
-        showLoading()
-        val getCartItemCall = repository.getCartItem(getUser().number, product.id)
-        getCartItemCall.enqueue(object: Callback<List<Cart>> {
-            override fun onResponse(call: Call<List<Cart>>, response: Response<List<Cart>>) {
-                if (response.isSuccessful && response.body() != null) {
-                    val items = response.body()!!
-                    if (items.isNotEmpty()) {
-                        binding.detailQuantity.text = items[0].quantity.toString()
-                    }
-                } else {
-                    Toast.makeText(this@DetailActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
-                }
-                showProduct()
-            }
-            override fun onFailure(call: Call<List<Cart>>, t: Throwable) {
-                Toast.makeText(this@DetailActivity, "خطا در برقراری ارتباط", Toast.LENGTH_SHORT).show()
-                showProduct()
-            }
-
-        })
     }
 
     private fun isUserLoggedIn(): Boolean {
@@ -206,7 +277,7 @@ class DetailActivity : AppCompatActivity() {
         return userData != ""
     }
 
-    private fun getUser(): User {
+    private fun getUser(): User? {
         val preferences = getSharedPreferences("sutech", MODE_PRIVATE)
         val userData = preferences.getString("user", "")
         return Gson().fromJson(userData, User::class.java)

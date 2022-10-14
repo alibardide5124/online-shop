@@ -24,15 +24,10 @@ class UserPanelActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        preferences = getSharedPreferences("sutech", MODE_PRIVATE)
-        if (!isUserLoggedIn()) {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
         binding = ActivityUserPanelBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        preferences = getSharedPreferences("sutech", MODE_PRIVATE)
 
         setupViews()
     }
@@ -64,7 +59,7 @@ class UserPanelActivity : AppCompatActivity() {
         binding.panelButtonDeleteAccount.setOnClickListener {
             AlertDialog.Builder(this)
                 .setTitle("حذف حساب کاربری")
-                .setMessage("آیا از خذف حساب کاربری مطمئن هستید؟")
+                .setMessage("آیا از حذف حساب کاربری مطمئن هستید؟")
                 .setPositiveButton("بله") { dialogInterface: DialogInterface, i: Int ->
                     deleteUser(user)
                 }
@@ -134,8 +129,4 @@ class UserPanelActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun isUserLoggedIn(): Boolean {
-        val userData = preferences.getString("user", "")
-        return userData != null && userData != ""
-    }
 }

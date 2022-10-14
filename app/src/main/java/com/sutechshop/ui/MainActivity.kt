@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var preferences: SharedPreferences
     private val repository = Repository()
+    private val products = mutableListOf<Product>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +41,14 @@ class MainActivity : AppCompatActivity() {
         binding.mainBtnMenu.setOnClickListener {
             binding.mainDrawer.openDrawer(GravityCompat.START)
         }
+        binding.mainBtnSearch.setOnClickListener {
+            val intent = Intent(this@MainActivity, SearchActivity::class.java)
+            startActivity(intent)
+        }
         binding.mainBtnRetry.setOnClickListener {
             setupRecyclerView()
         }
+
         setHeaderText()
         binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -69,6 +75,7 @@ class MainActivity : AppCompatActivity() {
             binding.mainDrawer.closeDrawer(GravityCompat.START)
             return@setNavigationItemSelectedListener true
         }
+
         setupRecyclerView()
     }
 
@@ -89,18 +96,16 @@ class MainActivity : AppCompatActivity() {
         val getAllProductsCall = repository.getAllProducts()
         getAllProductsCall.enqueue(object : Callback<List<Product>> {
             override fun onResponse(call: Call<List<Product>>, response: Response<List<Product>>) {
-                Log.d("response", response.toString())
                 if (response.isSuccessful && response.body() != null) {
                     val adapter = ProductListAdapter(this@MainActivity, response.body()!!)
                     binding.mainRV.layoutManager = LinearLayoutManager(this@MainActivity)
                     binding.mainRV.adapter = adapter
-
+                    products.addAll(response.body()!!)
                     if (response.body()!!.isNotEmpty())
                         showRecyclerView()
                     else
                         showEmpty()
                 } else {
-                    Log.e("Response", response.message())
                     showError()
                 }
             }
